@@ -723,6 +723,89 @@
 
   .btn-confirm-no:hover { border-color: var(--brown); }
 
+  /* ===== SLIDE PHOTOS SECTION ===== */
+  .slides-section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    margin-bottom: 0.65rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .slides-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--parchment);
+  }
+
+  .slide-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .slide-slot {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .slide-slot-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    color: var(--brown-light);
+    background: var(--cream-dark);
+    border: 1px solid var(--parchment);
+    border-radius: 2px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .slide-slot-num.slot-main {
+    background: var(--amber);
+    color: var(--brown-dark);
+    border-color: var(--amber);
+    font-weight: 500;
+  }
+
+  .slide-slot input {
+    flex: 1;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--parchment);
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Lora', serif;
+    font-size: 0.8rem;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .slide-slot input:focus { border-color: var(--amber); }
+
+  .slides-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--brown-light);
+    line-height: 1.55;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0.7rem;
+    background: var(--cream-dark);
+    border-left: 2px solid var(--parchment);
+    border-radius: 0 2px 2px 0;
+  }
+
   /* ===== TAPE DIVIDER ===== */
   .tape-divider {
     grid-column: 1 / -1;
@@ -919,8 +1002,30 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">URL Gambar</label>
-          <input type="url" class="form-input" id="inp-img" placeholder="https://... (kosongkan untuk placeholder SVG)">
+          <div class="slides-section-label">Foto Slide (maks. 4)</div>
+          <div class="slides-note">
+            Tempel URL foto dari imgbb, Cloudinary, GitHub, dll.<br>
+            Slide 1 = foto utama. Slide 2–4 = detail kondisi, aksesori, dsb.<br>
+            Kosongkan slide yang tidak dipakai — otomatis jadi placeholder.
+          </div>
+          <div class="slide-slots">
+            <div class="slide-slot">
+              <div class="slide-slot-num slot-main">1</div>
+              <input type="url" id="inp-img" placeholder="https://... foto utama (wajib untuk tampil gambar)">
+            </div>
+            <div class="slide-slot">
+              <div class="slide-slot-num">2</div>
+              <input type="url" id="inp-img2" placeholder="https://... detail kondisi / tampak samping">
+            </div>
+            <div class="slide-slot">
+              <div class="slide-slot-num">3</div>
+              <input type="url" id="inp-img3" placeholder="https://... kelengkapan aksesori">
+            </div>
+            <div class="slide-slot">
+              <div class="slide-slot-num">4</div>
+              <input type="url" id="inp-img4" placeholder="https://... serial number / label">
+            </div>
+          </div>
         </div>
 
         <hr class="form-divider">
@@ -978,12 +1083,12 @@
   const STORAGE_KEY = 'recordingbekas_products';
 
   const DEFAULT_PRODUCTS = [
-    { id: 1, name: 'Audio-Technica AT2020', cat: 'mic', sublabel: 'Condenser Microphone', cond: 'new', price: 1450000, original: null, desc: 'Cardioid condenser klasik untuk vokal & instrumen. Respons frekuensi luas, cocok untuk home studio.', img: '' },
-    { id: 2, name: 'Focusrite Scarlett Solo (Gen 4)', cat: 'interface', sublabel: 'Audio Interface', cond: 'new', price: 1750000, original: null, desc: '1 mic preamp, 1 instrument input. USB-C, plug & play. Standar home studio entry-level terbaik.', img: '' },
-    { id: 3, name: 'Focusrite Scarlett 2i2 (Gen 3)', cat: 'interface', sublabel: 'Audio Interface — Bekas', cond: 'used', price: 1350000, original: 2100000, desc: 'Kondisi 95%, mulus. 2 preamp, full set termasuk kabel. Cocok untuk duo recording atau podcast.', img: '' },
-    { id: 4, name: 'Yamaha HS5 (Single)', cat: 'monitor', sublabel: 'Studio Monitor', cond: 'new', price: 3800000, original: null, desc: 'Monitor referensi 5" dengan "white woofer" iconic. Respons flat, ideal untuk mixing & mastering.', img: '' },
-    { id: 5, name: 'Shure SM7B', cat: 'mic', sublabel: 'Dynamic Microphone — Bekas', cond: 'used', price: 5500000, original: 7200000, desc: 'Kondisi 90%, bekas 1 pemilik. Legenda vokal & podcast. Lengkap dengan yoke mount & windscreen.', img: '' },
-    { id: 6, name: 'Yamaha FG800', cat: 'guitar', sublabel: 'Gitar Akustik — Bekas', cond: 'used', price: 1900000, original: 2800000, desc: 'Kondisi 85%, ada minor scratch di body. Suara projection solid, cocok untuk strumming & fingerpicking.', img: '' },
+    { id: 1, name: 'Audio-Technica AT2020', cat: 'mic', sublabel: 'Condenser Microphone', cond: 'new', price: 1450000, original: null, desc: 'Cardioid condenser klasik untuk vokal & instrumen. Respons frekuensi luas, cocok untuk home studio.', img: '', slides: [] },
+    { id: 2, name: 'Focusrite Scarlett Solo (Gen 4)', cat: 'interface', sublabel: 'Audio Interface', cond: 'new', price: 1750000, original: null, desc: '1 mic preamp, 1 instrument input. USB-C, plug & play. Standar home studio entry-level terbaik.', img: '', slides: [] },
+    { id: 3, name: 'Focusrite Scarlett 2i2 (Gen 3)', cat: 'interface', sublabel: 'Audio Interface — Bekas', cond: 'used', price: 1350000, original: 2100000, desc: 'Kondisi 95%, mulus. 2 preamp, full set termasuk kabel. Cocok untuk duo recording atau podcast.', img: '', slides: [] },
+    { id: 4, name: 'Yamaha HS5 (Single)', cat: 'monitor', sublabel: 'Studio Monitor', cond: 'new', price: 3800000, original: null, desc: 'Monitor referensi 5" dengan "white woofer" iconic. Respons flat, ideal untuk mixing & mastering.', img: '', slides: [] },
+    { id: 5, name: 'Shure SM7B', cat: 'mic', sublabel: 'Dynamic Microphone — Bekas', cond: 'used', price: 5500000, original: 7200000, desc: 'Kondisi 90%, bekas 1 pemilik. Legenda vokal & podcast. Lengkap dengan yoke mount & windscreen.', img: '', slides: [] },
+    { id: 6, name: 'Yamaha FG800', cat: 'guitar', sublabel: 'Gitar Akustik — Bekas', cond: 'used', price: 1900000, original: 2800000, desc: 'Kondisi 85%, ada minor scratch di body. Suara projection solid, cocok untuk strumming & fingerpicking.', img: '', slides: [] },
   ];
 
   let products = [];
@@ -1121,6 +1226,9 @@
     document.getElementById('inp-price').value = '';
     document.getElementById('inp-original').value = '';
     document.getElementById('inp-img').value = '';
+    document.getElementById('inp-img2').value = '';
+    document.getElementById('inp-img3').value = '';
+    document.getElementById('inp-img4').value = '';
 
     document.getElementById('form-title').textContent = 'Tambah Produk Baru';
     document.getElementById('form-mode-badge').textContent = '+ Tambah';
@@ -1134,6 +1242,8 @@
     const p = products.find(x => x.id === id);
     if (!p) return;
 
+    const slides = p.slides || [];
+
     document.getElementById('edit-id').value = id;
     document.getElementById('inp-name').value = p.name;
     document.getElementById('inp-cat').value = p.cat;
@@ -1143,6 +1253,9 @@
     document.getElementById('inp-price').value = p.price;
     document.getElementById('inp-original').value = p.original || '';
     document.getElementById('inp-img').value = p.img || '';
+    document.getElementById('inp-img2').value = slides[0] || '';
+    document.getElementById('inp-img3').value = slides[1] || '';
+    document.getElementById('inp-img4').value = slides[2] || '';
 
     document.getElementById('form-title').textContent = 'Edit Produk';
     document.getElementById('form-mode-badge').textContent = '✎ Edit';
@@ -1164,6 +1277,13 @@
     const original = parseInt(document.getElementById('inp-original').value) || null;
     const img = document.getElementById('inp-img').value.trim();
 
+    // Collect extra slides (filter kosong)
+    const slides = [
+      document.getElementById('inp-img2').value.trim(),
+      document.getElementById('inp-img3').value.trim(),
+      document.getElementById('inp-img4').value.trim(),
+    ].filter(s => s !== '');
+
     if (!name) { showToast('⚠ Nama produk wajib diisi!'); return; }
     if (!cat) { showToast('⚠ Pilih kategori produk!'); return; }
     if (!price || price <= 0) { showToast('⚠ Harga jual wajib diisi!'); return; }
@@ -1173,11 +1293,11 @@
     if (editId) {
       const idx = products.findIndex(p => p.id === parseInt(editId));
       if (idx > -1) {
-        products[idx] = { ...products[idx], name, cat, cond, sublabel, desc, price, original, img };
+        products[idx] = { ...products[idx], name, cat, cond, sublabel, desc, price, original, img, slides };
         showToast('✔ Produk berhasil diperbarui!');
       }
     } else {
-      products.push({ id: nextId++, name, cat, cond, sublabel, desc, price, original, img });
+      products.push({ id: nextId++, name, cat, cond, sublabel, desc, price, original, img, slides });
       showToast('✔ Produk berhasil ditambahkan!');
     }
 
@@ -1215,13 +1335,35 @@
   function generateCardHTML(p) {
     const condClass = p.cond === 'new' ? 'cond-new' : 'cond-used';
     const condLabel = p.cond === 'new' ? 'Baru' : 'Bekas';
-    const imgContent = p.img
-      ? `<img class="card-img" src="${escHtml(p.img)}" alt="${escHtml(p.name)}" loading="lazy">`
-      : `<div class="card-img-placeholder">
-        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          ${getSvgIcon(p.cat)}
-        </svg>
-      </div>`;
+
+    // Build all slide URLs: slide1 (main img) + extra slides
+    const extraSlides = p.slides || [];
+    const allSlides = [p.img || '', ...extraSlides];
+
+    // Each slide: if URL is present → <img>, else → placeholder svg
+    const svgPlaceholder = `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${getSvgIcon(p.cat)}</svg>`;
+
+    const slidesHTML = allSlides.map(url => {
+      if (url) {
+        return `<div class="slider-slide">
+              <img src="${escHtml(url)}" alt="${escHtml(p.name)}" loading="lazy">
+            </div>`;
+      } else {
+        return `<div class="slider-slide-placeholder">
+              ${svgPlaceholder}
+            </div>`;
+      }
+    }).join('\n            ');
+
+    const sliderHTML = `<div class="card-slider" data-slider>
+          <div class="slider-track">
+            ${slidesHTML}
+          </div>
+          <button class="slider-btn slider-btn-prev" aria-label="Foto sebelumnya">&#8249;</button>
+          <button class="slider-btn slider-btn-next" aria-label="Foto berikutnya">&#8250;</button>
+          <div class="slider-dots"></div>
+          <span class="slider-count-badge"></span>
+        </div>`;
 
     const priceBlock = p.original
       ? `<div>
@@ -1239,7 +1381,7 @@
       <!-- ${escHtml(p.name)} -->
       <div class="card" data-cat="${p.cat}" data-cond="${p.cond}">
         <span class="card-condition ${condClass}">${condLabel}</span>
-        ${imgContent}
+        ${sliderHTML}
         <div class="card-body">
           ${p.sublabel ? `<p class="card-category">${escHtml(p.sublabel)}</p>` : ''}
           <h3 class="card-name">${escHtml(p.name)}</h3>
