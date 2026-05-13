@@ -1380,7 +1380,7 @@
 
       if (!res.ok) throw new Error('Gagal membuat transaksi');
 
-      const { token: snap_token } = await res.json();
+      const { snap_token } = await res.json();
 
       // Buka popup Midtrans Snap
       window.snap.pay(snap_token, {
