@@ -821,6 +821,127 @@
     color: var(--brown-light);
   }
 
+  /* ===== PHOTO SLIDER ===== */
+  .card-slider {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: var(--cream-dark);
+  }
+
+  .slider-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .slider-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .slider-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Placeholder slide (no image) */
+  .slider-slide-placeholder {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream-dark);
+  }
+
+  .slider-slide-placeholder svg {
+    width: 64px;
+    height: 64px;
+    opacity: 0.22;
+    fill: var(--brown);
+  }
+
+  /* Prev / Next buttons */
+  .slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background: rgba(74, 49, 32, 0.72);
+    border: none;
+    border-radius: 2px;
+    color: var(--cream);
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.18s, background 0.15s;
+    backdrop-filter: blur(2px);
+    line-height: 1;
+  }
+
+  .card-slider:hover .slider-btn { opacity: 1; }
+  .slider-btn:hover { background: var(--amber); color: var(--ink); }
+
+  .slider-btn-prev { left: 6px; }
+  .slider-btn-next { right: 6px; }
+
+  /* Dot indicators */
+  .slider-dots {
+    position: absolute;
+    bottom: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 5px;
+    z-index: 5;
+  }
+
+  .slider-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .slider-dot.active {
+    background: var(--amber-light);
+    transform: scale(1.25);
+  }
+
+  /* slide count badge (top-right, only when >1 slides) */
+  .slider-count-badge {
+    position: absolute;
+    bottom: 7px;
+    right: 8px;
+    background: rgba(42,31,20,0.65);
+    color: var(--parchment);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    padding: 2px 5px;
+    border-radius: 2px;
+    z-index: 5;
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+  }
+
   /* ===== RESPONSIVE ===== */
   @media (max-width: 640px) {
     .nav-inner nav { display: none; }
@@ -891,7 +1012,23 @@
       <!-- Audio-Technica AT2020 -->
       <div class="card" data-cat="mic" data-cond="new">
         <span class="card-condition cond-new">Baru</span>
-        <img class="card-img" src="https://i.ibb.co.com/Zz3118cc/template-barang-recording-bekas-AT2020.jpg" alt="Audio-Technica AT2020" loading="lazy">
+        <div class="card-slider" data-slider>
+          <div class="slider-track">
+            <div class="slider-slide">
+              <img src="https://i.ibb.co.com/Zz3118cc/template-barang-recording-bekas-AT2020.jpg" alt="Audio-Technica AT2020 — tampak depan" loading="lazy">
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="24" y="4" width="16" height="32" rx="8"/><path d="M12 28c0 11 8 20 20 20s20-9 20-20"/><line x1="32" y1="48" x2="32" y2="58" stroke-width="4" stroke-linecap="round" stroke="#7A5535"/><line x1="20" y1="58" x2="44" y2="58" stroke-width="4" stroke-linecap="round" stroke="#7A5535"/></svg>
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="24" y="4" width="16" height="32" rx="8"/><path d="M12 28c0 11 8 20 20 20s20-9 20-20"/><line x1="32" y1="48" x2="32" y2="58" stroke-width="4" stroke-linecap="round" stroke="#7A5535"/><line x1="20" y1="58" x2="44" y2="58" stroke-width="4" stroke-linecap="round" stroke="#7A5535"/></svg>
+            </div>
+          </div>
+          <button class="slider-btn slider-btn-prev" aria-label="Foto sebelumnya">&#8249;</button>
+          <button class="slider-btn slider-btn-next" aria-label="Foto berikutnya">&#8250;</button>
+          <div class="slider-dots"></div>
+          <span class="slider-count-badge"></span>
+        </div>
         <div class="card-body">
           <p class="card-category">Condenser Microphone</p>
           <h3 class="card-name">Audio-Technica AT2020</h3>
@@ -908,7 +1045,23 @@
       <!-- Focusrite Scarlett Solo (Gen 4) -->
       <div class="card" data-cat="interface" data-cond="new">
         <span class="card-condition cond-new">Baru</span>
-        <img class="card-img" src="https://i.ibb.co.com/fzHsHhcN/template-barang-recording-bekas-focus-solo-gen4.jpg" alt="Focusrite Scarlett Solo (Gen 4)" loading="lazy">
+        <div class="card-slider" data-slider>
+          <div class="slider-track">
+            <div class="slider-slide">
+              <img src="https://i.ibb.co.com/fzHsHhcN/template-barang-recording-bekas-focus-solo-gen4.jpg" alt="Focusrite Scarlett Solo Gen 4 — tampak depan" loading="lazy">
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="16" width="56" height="32" rx="4"/><circle cx="18" cy="32" r="8" fill="none" stroke-width="2.5"/><circle cx="46" cy="32" r="8" fill="none" stroke-width="2.5"/><rect x="28" y="26" width="8" height="12" rx="1" fill="none" stroke-width="2"/></svg>
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="16" width="56" height="32" rx="4"/><circle cx="18" cy="32" r="8" fill="none" stroke-width="2.5"/><circle cx="46" cy="32" r="8" fill="none" stroke-width="2.5"/><rect x="28" y="26" width="8" height="12" rx="1" fill="none" stroke-width="2"/></svg>
+            </div>
+          </div>
+          <button class="slider-btn slider-btn-prev" aria-label="Foto sebelumnya">&#8249;</button>
+          <button class="slider-btn slider-btn-next" aria-label="Foto berikutnya">&#8250;</button>
+          <div class="slider-dots"></div>
+          <span class="slider-count-badge"></span>
+        </div>
         <div class="card-body">
           <p class="card-category">Audio Interface</p>
           <h3 class="card-name">Focusrite Scarlett Solo (Gen 4)</h3>
@@ -925,11 +1078,23 @@
       <!-- Focusrite Scarlett 2i2 (Gen 3) -->
       <div class="card" data-cat="interface" data-cond="used">
         <span class="card-condition cond-used">Bekas</span>
-        <div class="card-img-placeholder">
-        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="16" width="56" height="32" rx="4"/><circle cx="18" cy="32" r="8" fill="none" stroke-width="2.5"/><circle cx="46" cy="32" r="8" fill="none" stroke-width="2.5"/><rect x="28" y="26" width="8" height="12" rx="1" fill="none" stroke-width="2"/>
-        </svg>
-      </div>
+        <div class="card-slider" data-slider>
+          <div class="slider-track">
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="16" width="56" height="32" rx="4"/><circle cx="18" cy="32" r="8" fill="none" stroke-width="2.5"/><circle cx="46" cy="32" r="8" fill="none" stroke-width="2.5"/><rect x="28" y="26" width="8" height="12" rx="1" fill="none" stroke-width="2"/></svg>
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="16" width="56" height="32" rx="4"/><circle cx="18" cy="32" r="8" fill="none" stroke-width="2.5"/><circle cx="46" cy="32" r="8" fill="none" stroke-width="2.5"/><rect x="28" y="26" width="8" height="12" rx="1" fill="none" stroke-width="2"/></svg>
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="16" width="56" height="32" rx="4"/><circle cx="18" cy="32" r="8" fill="none" stroke-width="2.5"/><circle cx="46" cy="32" r="8" fill="none" stroke-width="2.5"/><rect x="28" y="26" width="8" height="12" rx="1" fill="none" stroke-width="2"/></svg>
+            </div>
+          </div>
+          <button class="slider-btn slider-btn-prev" aria-label="Foto sebelumnya">&#8249;</button>
+          <button class="slider-btn slider-btn-next" aria-label="Foto berikutnya">&#8250;</button>
+          <div class="slider-dots"></div>
+          <span class="slider-count-badge"></span>
+        </div>
         <div class="card-body">
           <p class="card-category">Audio Interface — Bekas</p>
           <h3 class="card-name">Focusrite Scarlett 2i2 (Gen 3)</h3>
@@ -947,11 +1112,20 @@
       <!-- Yamaha HS5 (Single) -->
       <div class="card" data-cat="monitor" data-cond="new">
         <span class="card-condition cond-new">Baru</span>
-        <div class="card-img-placeholder">
-        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="8" y="8" width="32" height="40" rx="3"/><circle cx="24" cy="26" r="10" fill="none" stroke-width="2.5"/><circle cx="24" cy="26" r="4"/><circle cx="24" cy="44" r="4" fill="none" stroke-width="2"/>
-        </svg>
-      </div>
+        <div class="card-slider" data-slider>
+          <div class="slider-track">
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="32" height="40" rx="3"/><circle cx="24" cy="26" r="10" fill="none" stroke-width="2.5"/><circle cx="24" cy="26" r="4"/><circle cx="24" cy="44" r="4" fill="none" stroke-width="2"/></svg>
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="32" height="40" rx="3"/><circle cx="24" cy="26" r="10" fill="none" stroke-width="2.5"/><circle cx="24" cy="26" r="4"/><circle cx="24" cy="44" r="4" fill="none" stroke-width="2"/></svg>
+            </div>
+          </div>
+          <button class="slider-btn slider-btn-prev" aria-label="Foto sebelumnya">&#8249;</button>
+          <button class="slider-btn slider-btn-next" aria-label="Foto berikutnya">&#8250;</button>
+          <div class="slider-dots"></div>
+          <span class="slider-count-badge"></span>
+        </div>
         <div class="card-body">
           <p class="card-category">Studio Monitor</p>
           <h3 class="card-name">Yamaha HS5 (Single)</h3>
@@ -968,11 +1142,26 @@
       <!-- Shure SM7B -->
       <div class="card" data-cat="mic" data-cond="used">
         <span class="card-condition cond-used">Bekas</span>
-        <div class="card-img-placeholder">
-        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="24" y="4" width="16" height="32" rx="8"/><path d="M12 28c0 11 8 20 20 20s20-9 20-20"/><line x1="32" y1="48" x2="32" y2="58" stroke-width="4" stroke-linecap="round"/><line x1="20" y1="58" x2="44" y2="58" stroke-width="4" stroke-linecap="round"/>
-        </svg>
-      </div>
+        <div class="card-slider" data-slider>
+          <div class="slider-track">
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="4" width="16" height="32" rx="8"/><path d="M12 28c0 11 8 20 20 20s20-9 20-20"/><line x1="32" y1="48" x2="32" y2="58" stroke-width="4" stroke-linecap="round"/><line x1="20" y1="58" x2="44" y2="58" stroke-width="4" stroke-linecap="round"/></svg>
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="4" width="16" height="32" rx="8"/><path d="M12 28c0 11 8 20 20 20s20-9 20-20"/><line x1="32" y1="48" x2="32" y2="58" stroke-width="4" stroke-linecap="round"/><line x1="20" y1="58" x2="44" y2="58" stroke-width="4" stroke-linecap="round"/></svg>
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="4" width="16" height="32" rx="8"/><path d="M12 28c0 11 8 20 20 20s20-9 20-20"/><line x1="32" y1="48" x2="32" y2="58" stroke-width="4" stroke-linecap="round"/><line x1="20" y1="58" x2="44" y2="58" stroke-width="4" stroke-linecap="round"/></svg>
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="24" y="4" width="16" height="32" rx="8"/><path d="M12 28c0 11 8 20 20 20s20-9 20-20"/><line x1="32" y1="48" x2="32" y2="58" stroke-width="4" stroke-linecap="round"/><line x1="20" y1="58" x2="44" y2="58" stroke-width="4" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <button class="slider-btn slider-btn-prev" aria-label="Foto sebelumnya">&#8249;</button>
+          <button class="slider-btn slider-btn-next" aria-label="Foto berikutnya">&#8250;</button>
+          <div class="slider-dots"></div>
+          <span class="slider-count-badge"></span>
+        </div>
         <div class="card-body">
           <p class="card-category">Dynamic Microphone — Bekas</p>
           <h3 class="card-name">Shure SM7B</h3>
@@ -990,11 +1179,23 @@
       <!-- Yamaha FG800 -->
       <div class="card" data-cat="guitar" data-cond="used">
         <span class="card-condition cond-used">Bekas</span>
-        <div class="card-img-placeholder">
-        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <ellipse cx="28" cy="44" rx="16" ry="14"/><rect x="26" y="4" width="4" height="32"/><rect x="20" y="4" width="16" height="6" rx="1"/><line x1="14" y1="32" x2="42" y2="32" stroke-width="1.5"/>
-        </svg>
-      </div>
+        <div class="card-slider" data-slider>
+          <div class="slider-track">
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="28" cy="44" rx="16" ry="14"/><rect x="26" y="4" width="4" height="32"/><rect x="20" y="4" width="16" height="6" rx="1"/><line x1="14" y1="32" x2="42" y2="32" stroke-width="1.5"/></svg>
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="28" cy="44" rx="16" ry="14"/><rect x="26" y="4" width="4" height="32"/><rect x="20" y="4" width="16" height="6" rx="1"/><line x1="14" y1="32" x2="42" y2="32" stroke-width="1.5"/></svg>
+            </div>
+            <div class="slider-slide-placeholder">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#7A5535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="28" cy="44" rx="16" ry="14"/><rect x="26" y="4" width="4" height="32"/><rect x="20" y="4" width="16" height="6" rx="1"/><line x1="14" y1="32" x2="42" y2="32" stroke-width="1.5"/></svg>
+            </div>
+          </div>
+          <button class="slider-btn slider-btn-prev" aria-label="Foto sebelumnya">&#8249;</button>
+          <button class="slider-btn slider-btn-next" aria-label="Foto berikutnya">&#8250;</button>
+          <div class="slider-dots"></div>
+          <span class="slider-count-badge"></span>
+        </div>
         <div class="card-body">
           <p class="card-category">Gitar Akustik — Bekas</p>
           <h3 class="card-name">Yamaha FG800</h3>
@@ -1315,28 +1516,73 @@
     window.open(`https://wa.me/6281200000000?text=${msg}`, '_blank');
   }
 
-  function filterProducts(btn, cat) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+  // ===== PHOTO SLIDER ENGINE =====
+  function initSliders() {
+    document.querySelectorAll('[data-slider]').forEach(slider => {
+      const track = slider.querySelector('.slider-track');
+      const dotsContainer = slider.querySelector('.slider-dots');
+      const countBadge = slider.querySelector('.slider-count-badge');
+      const btnPrev = slider.querySelector('.slider-btn-prev');
+      const btnNext = slider.querySelector('.slider-btn-next');
 
-    const cards = document.querySelectorAll('.card');
-    let visible = 0;
+      // Collect slides (both real and placeholder)
+      const slides = Array.from(track.children);
+      const total = slides.length;
 
-    cards.forEach(card => {
-      const cardCat = card.dataset.cat;
-      const cardCond = card.dataset.cond;
-      let show = false;
+      if (total <= 1) {
+        btnPrev.style.display = 'none';
+        btnNext.style.display = 'none';
+        countBadge.style.display = 'none';
+        dotsContainer.style.display = 'none';
+        return;
+      }
 
-      if (cat === 'all') show = true;
-      else if (cat === 'used') show = cardCond === 'used';
-      else show = cardCat === cat;
+      let current = 0;
 
-      card.style.display = show ? 'block' : 'none';
-      if (show) visible++;
+      // Build dots
+      slides.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', `Foto ${i + 1}`);
+        dot.addEventListener('click', () => goTo(i));
+        dotsContainer.appendChild(dot);
+      });
+
+      function updateUI() {
+        track.style.transform = `translateX(-${current * 100}%)`;
+        dotsContainer.querySelectorAll('.slider-dot').forEach((d, i) => {
+          d.classList.toggle('active', i === current);
+        });
+        countBadge.textContent = `${current + 1}/${total}`;
+      }
+
+      function goTo(idx) {
+        current = (idx + total) % total;
+        updateUI();
+      }
+
+      btnPrev.addEventListener('click', (e) => { e.stopPropagation(); goTo(current - 1); });
+      btnNext.addEventListener('click', (e) => { e.stopPropagation(); goTo(current + 1); });
+
+      // Touch / swipe support
+      let touchStartX = 0;
+      slider.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+      slider.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
+      }, { passive: true });
+
+      updateUI();
     });
-
-    document.getElementById('product-count').textContent = `— ${visible} produk`;
   }
-</script>
+
+  // Run on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSliders);
+  } else {
+    initSliders();
+  }
+
+  function filterProducts(btn, cat) {
 </body>
 </html>
