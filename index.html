@@ -956,7 +956,7 @@
   }
 </style>
   <!-- Midtrans Snap.js (ganti ke production URL kalau sudah live) -->
-  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-ZDalfVA3R-xhyAoQ"></script>
+  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-XbghD5kfQNOe807Y"></script>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -1068,6 +1068,10 @@
     <div class="form-group">
       <label class="form-label">Nomor WhatsApp</label>
       <input type="tel" class="form-input" placeholder="08xx-xxxx-xxxx" id="inp-wa">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" placeholder="email@kamu.com" id="inp-email">
     </div>
     <div class="form-group">
       <label class="form-label">Alamat Pengiriman</label>
@@ -1332,11 +1336,12 @@
 
     const nama  = document.getElementById('inp-nama').value.trim();
     const wa    = document.getElementById('inp-wa').value.trim();
+    const email = document.getElementById('inp-email').value.trim();
     const alamat = document.getElementById('inp-alamat').value.trim();
     const kirim = document.getElementById('inp-kirim').value;
 
-    if (!nama || !wa || !alamat || !kirim) {
-      showToast('Lengkapi nama, WA, alamat & kurir dulu!');
+    if (!nama || !wa || !email || !alamat || !kirim) {
+      showToast('Lengkapi nama, WA, email, alamat & kurir dulu!');
       return;
     }
 
@@ -1349,7 +1354,7 @@
       gross_amount: total,
       customer_details: {
         first_name: nama,
-        email: '',
+        email: email,
         phone: wa,
         shipping_address: { address: alamat }
       },
@@ -1378,9 +1383,9 @@
       );
 
       if (!res.ok) {
-  const errData = await res.json();
-  throw new Error(JSON.stringify(errData));
-}
+        const errData = await res.json();
+        throw new Error(JSON.stringify(errData));
+      }
 
       const { snap_token } = await res.json();
 
