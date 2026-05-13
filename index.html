@@ -1377,7 +1377,10 @@
         }
       );
 
-      if (!res.ok) throw new Error('Gagal membuat transaksi');
+      if (!res.ok) {
+  const errData = await res.json();
+  throw new Error(JSON.stringify(errData));
+}
 
       const { snap_token } = await res.json();
 
