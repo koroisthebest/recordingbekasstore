@@ -848,11 +848,153 @@
     .stats-row { grid-template-columns: 1fr 1fr; }
     .nav-inner { padding: 0 1rem; }
   }
+
+  /* ===== LOGIN SCREEN ===== */
+  #login-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--brown-dark);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  #login-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .login-box {
+    background: var(--cream);
+    border: 2px solid var(--amber);
+    border-radius: 4px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 380px;
+    position: relative;
+    text-align: center;
+  }
+
+  .login-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--brown-dark);
+    letter-spacing: 0.06em;
+    margin-bottom: 0.3rem;
+  }
+
+  .login-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    margin-bottom: 2rem;
+    display: block;
+  }
+
+  .login-label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--brown);
+    text-align: left;
+    margin-bottom: 0.4rem;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--parchment);
+    background: white;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    border-radius: 3px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 1rem;
+    letter-spacing: 0.1em;
+  }
+
+  .login-input:focus { border-color: var(--amber); }
+
+  .login-input.error { border-color: var(--rust); animation: shake 0.3s ease; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%       { transform: translateX(-6px); }
+    75%       { transform: translateX(6px); }
+  }
+
+  .login-btn {
+    width: 100%;
+    background: var(--brown-dark);
+    color: var(--cream);
+    border: none;
+    padding: 0.85rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.2s;
+  }
+
+  .login-btn:hover { background: var(--amber); color: var(--ink); }
+
+  .login-error {
+    font-family: 'Lora', serif;
+    font-size: 0.8rem;
+    color: var(--rust);
+    margin-top: 0.75rem;
+    min-height: 1.2em;
+    font-style: italic;
+  }
+
+  .login-lock-icon {
+    font-size: 2rem;
+    margin-bottom: 1.2rem;
+    opacity: 0.5;
+  }
+
+  /* Sembunyikan konten admin selama belum login */
+  body.locked > *:not(#login-screen) {
+    visibility: hidden;
+    pointer-events: none;
+  }
 </style>
 </head>
-<body>
+<body class="locked">
 
-<!-- HEADER -->
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-lock-icon">🔐</div>
+    <div class="login-logo">Recording Bekas</div>
+    <span class="login-sub">Admin Panel — Login Dulu</span>
+    <label class="login-label">Password</label>
+    <input
+      type="password"
+      id="login-input"
+      class="login-input"
+      placeholder="Masukkan password admin"
+      onkeydown="if(event.key==='Enter') doLogin()"
+      autocomplete="current-password"
+    >
+    <button class="login-btn" onclick="doLogin()">Masuk →</button>
+    <p class="login-error" id="login-error"></p>
+  </div>
+</div>
 <header>
   <div class="nav-inner">
     <div class="logo">
@@ -1480,9 +1622,58 @@ const firebaseConfig = {
     }
   });
 
+  // ===== AUTH / LOGIN =====
+  // Password di-hash pakai SHA-256 supaya tidak plaintext di source code.
+  // Hash di bawah = password "admin123"
+  // Cara ganti password:
+  //   1. Buka browser console (F12)
+  //   2. Jalankan: hashPassword('passwordBaruKamu').then(h => console.log(h))
+  //   3. Copy hasilnya, tempel ganti nilai ADMIN_HASH di bawah
+
+  const ADMIN_HASH = 'ecd71870d1963316a97e3ac3408c9835ad8cf0f3ece5920f3f4f21e960e8e4a4'; // = "admin123"
+  const SESSION_KEY = 'rb_admin_auth';
+
+  async function hashPassword(pw) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  async function doLogin() {
+    const input = document.getElementById('login-input');
+    const errEl = document.getElementById('login-error');
+    const pw = input.value;
+
+    if (!pw) { errEl.textContent = 'Password tidak boleh kosong.'; return; }
+
+    const hash = await hashPassword(pw);
+
+    if (hash === ADMIN_HASH) {
+      // Simpan session (hilang saat tab/browser ditutup)
+      sessionStorage.setItem(SESSION_KEY, '1');
+      document.getElementById('login-screen').remove();
+      document.body.classList.remove('locked');
+      loadProducts();
+      toggleOriginalPrice();
+    } else {
+      errEl.textContent = 'Password salah. Coba lagi.';
+      input.value = '';
+      input.classList.add('error');
+      setTimeout(() => input.classList.remove('error'), 500);
+      input.focus();
+    }
+  }
+
   // ===== INIT =====
-  loadProducts(); // async — renderTable() dipanggil di dalamnya setelah data siap
-  toggleOriginalPrice();
+  // Cek apakah sudah login di session ini
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    document.getElementById('login-screen').remove();
+    document.body.classList.remove('locked');
+    loadProducts();
+    toggleOriginalPrice();
+  } else {
+    // Belum login — fokus ke input password
+    setTimeout(() => document.getElementById('login-input')?.focus(), 100);
+  }
 </script>
 </body>
 </html>
