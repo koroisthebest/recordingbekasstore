@@ -956,7 +956,7 @@
   }
 </style>
   <!-- Midtrans Snap.js (ganti ke production URL kalau sudah live) -->
-  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-XbghD5kfQNOe807Y"></script>
+  <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-XbghD5kfQNOe807Y"></script>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -1373,7 +1373,7 @@
       //
       // Contoh response backend: { "snap_token": "xxxx-xxx-xxx" }
       // ─────────────────────────────────────────────────────────────────
-      const res = await fetch('https://recording-bekas-api.vercel.app/api/create-transaction', {
+      const res = await fetch('http://localhost:3000/api/create-transaction', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
