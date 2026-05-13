@@ -1078,9 +1078,33 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- =====================================================
+     FIREBASE SDK
+===================================================== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 <script>
+  // =====================================================
+  // 🔧 FIREBASE CONFIG — GANTI DENGAN MILIK KAMU
+  //    Cara dapat: console.firebase.google.com
+  //    → Pilih project → Project Settings → Your apps → Web app
+  // =====================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyDflgvN8GoIbsLK7X5aNOY5450EPLY23mY",
+  authDomain: "recordingstoreweb.firebaseapp.com",
+  projectId: "recordingstoreweb",
+  storageBucket: "recordingstoreweb.firebasestorage.app",
+  messagingSenderId: "547568382325",
+  appId: "1:547568382325:web:4d7be1445bafe940e8a33c",
+  measurementId: "G-P7HWWBMML0"
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const DOC_REF = db.collection('store').doc('catalog');
+
   // ===== DATA =====
-  const STORAGE_KEY = 'recordingbekas_products';
 
   const DEFAULT_PRODUCTS = [
     { id: 1, name: 'Audio-Technica AT2020', cat: 'mic', sublabel: 'Condenser Microphone', cond: 'new', price: 1450000, original: null, desc: 'Cardioid condenser klasik untuk vokal & instrumen. Respons frekuensi luas, cocok untuk home studio.', img: '', slides: [] },
@@ -1118,26 +1142,38 @@
     return CAT_ICONS[cat] || CAT_ICONS.other;
   }
 
-  // ===== STORAGE =====
-  function loadProducts() {
+  // ===== STORAGE (Firebase) =====
+  async function loadProducts() {
+    showToast('⏳ Memuat data dari server...');
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        products = parsed.products || DEFAULT_PRODUCTS;
-        nextId = parsed.nextId || 100;
+      const snap = await DOC_REF.get();
+      if (snap.exists) {
+        const data = snap.data();
+        products = data.products || DEFAULT_PRODUCTS;
+        nextId   = data.nextId   || 100;
       } else {
+        // Dokumen belum ada → inisialisasi dengan data default
         products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
-        nextId = 100;
-        saveProducts();
+        nextId   = 100;
+        await saveProducts();
       }
     } catch(e) {
+      console.error('Firebase load error:', e);
+      showToast('⚠ Gagal load Firebase. Cek config & koneksi.');
       products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
     }
+    renderTable();
+    toggleOriginalPrice();
   }
 
-  function saveProducts() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ products, nextId }));
+  async function saveProducts() {
+    try {
+      await DOC_REF.set({ products, nextId });
+    } catch(e) {
+      console.error('Firebase save error:', e);
+      showToast('⚠ Gagal simpan ke Firebase! Cek koneksi.');
+      throw e;
+    }
   }
 
   // ===== UTILS =====
@@ -1267,7 +1303,7 @@
     document.querySelector('.form-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function submitProduct() {
+  async function submitProduct() {
     const name = document.getElementById('inp-name').value.trim();
     const cat = document.getElementById('inp-cat').value;
     const cond = document.getElementById('inp-cond').value;
@@ -1294,16 +1330,20 @@
       const idx = products.findIndex(p => p.id === parseInt(editId));
       if (idx > -1) {
         products[idx] = { ...products[idx], name, cat, cond, sublabel, desc, price, original, img, slides };
-        showToast('✔ Produk berhasil diperbarui!');
       }
     } else {
       products.push({ id: nextId++, name, cat, cond, sublabel, desc, price, original, img, slides });
-      showToast('✔ Produk berhasil ditambahkan!');
     }
 
-    saveProducts();
-    renderTable();
-    resetForm();
+    showToast('⏳ Menyimpan ke server...');
+    try {
+      await saveProducts();
+      showToast(editId ? '✔ Produk berhasil diperbarui!' : '✔ Produk berhasil ditambahkan!');
+      renderTable();
+      resetForm();
+    } catch(e) {
+      showToast('⚠ Gagal menyimpan! Cek koneksi.');
+    }
   }
 
   // ===== DELETE =====
@@ -1313,17 +1353,22 @@
     pendingDeleteId = id;
     document.getElementById('confirm-msg').textContent = `"${p.name}" akan dihapus secara permanen dari daftar produk.`;
     document.getElementById('confirm-overlay').classList.add('open');
-    document.getElementById('confirm-yes-btn').onclick = () => {
-      deleteProduct(id);
+    document.getElementById('confirm-yes-btn').onclick = async () => {
+      await deleteProduct(id);
       closeConfirm();
     };
   }
 
-  function deleteProduct(id) {
+  async function deleteProduct(id) {
     products = products.filter(p => p.id !== id);
-    saveProducts();
-    renderTable();
-    showToast('🗑 Produk dihapus.');
+    showToast('⏳ Menghapus...');
+    try {
+      await saveProducts();
+      renderTable();
+      showToast('🗑 Produk dihapus.');
+    } catch(e) {
+      showToast('⚠ Gagal hapus! Cek koneksi.');
+    }
   }
 
   function closeConfirm() {
@@ -1436,8 +1481,7 @@
   });
 
   // ===== INIT =====
-  loadProducts();
-  renderTable();
+  loadProducts(); // async — renderTable() dipanggil di dalamnya setelah data siap
   toggleOriginalPrice();
 </script>
 </body>
