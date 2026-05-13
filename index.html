@@ -1373,7 +1373,7 @@
       //
       // Contoh response backend: { "snap_token": "xxxx-xxx-xxx" }
       // ─────────────────────────────────────────────────────────────────
-      const res = await fetch('/api/create-transaction', {
+      const res = await fetch('https://recording-bekas-api.vercel.app/api/create-transaction', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
