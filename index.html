@@ -1373,8 +1373,12 @@
       //
       // Contoh response backend: { "snap_token": "xxxx-xxx-xxx" }
       // ─────────────────────────────────────────────────────────────────
-      const res = await fetch('http://localhost:3000/api/create-transaction', {
-        method: 'POST',
+      const res = await fetch(
+  'http://localhost:3000/api/create-transaction',
+  {
+    method: 'POST'
+  }
+);,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
