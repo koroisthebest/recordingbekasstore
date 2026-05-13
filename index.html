@@ -954,6 +954,9 @@
 </style>
   <!-- Midtrans Snap.js (ganti ke production URL kalau sudah live) -->
   <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="YOUR_MIDTRANS_CLIENT_KEY"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -1113,8 +1116,23 @@
 </div>
 
 <script>
-  // ===== SHARED STORAGE KEY (sama dengan admin panel) =====
-  const STORAGE_KEY = 'recordingbekas_products';
+  // =====================================================
+  // 🔧 FIREBASE CONFIG — SAMA PERSIS DENGAN DI ADMIN.HTML
+  // =====================================================
+ 
+const firebaseConfig = {
+  apiKey: "AIzaSyDflgvN8GoIbsLK7X5aNOY5450EPLY23mY",
+  authDomain: "recordingstoreweb.firebaseapp.com",
+  projectId: "recordingstoreweb",
+  storageBucket: "recordingstoreweb.firebasestorage.app",
+  messagingSenderId: "547568382325",
+  appId: "1:547568382325:web:4d7be1445bafe940e8a33c",
+  measurementId: "G-P7HWWBMML0"
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const DOC_REF = db.collection('store').doc('catalog');
 
   const CAT_ICONS = {
     mic: `<rect x="24" y="4" width="16" height="32" rx="8"/><path d="M12 28c0 11 8 20 20 20s20-9 20-20"/><line x1="32" y1="48" x2="32" y2="58" stroke-width="4" stroke-linecap="round"/><line x1="20" y1="58" x2="44" y2="58" stroke-width="4" stroke-linecap="round"/>`,
@@ -1140,19 +1158,26 @@
     return 'Rp ' + Number(n).toLocaleString('id-ID');
   }
 
-  // ===== RENDER PRODUCTS FROM LOCALSTORAGE =====
-  function loadAndRenderProducts() {
-    let products = [];
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        products = parsed.products || [];
-      }
-    } catch(e) { products = []; }
-
+  // ===== RENDER PRODUCTS FROM FIREBASE =====
+  async function loadAndRenderProducts() {
     const grid = document.getElementById('products-grid');
     const countEl = document.getElementById('product-count');
+
+    // Tampilkan loading state
+    grid.innerHTML = '<p style="font-family:Lora,serif;font-style:italic;color:var(--brown-light);padding:2rem;grid-column:1/-1">⏳ Memuat produk...</p>';
+
+    let products = [];
+    try {
+      const snap = await DOC_REF.get();
+      if (snap.exists) {
+        const data = snap.data();
+        products = data.products || [];
+      }
+    } catch(e) {
+      console.error('Firebase load error:', e);
+      grid.innerHTML = '<p style="font-family:Lora,serif;font-style:italic;color:var(--brown-light);padding:2rem;grid-column:1/-1">⚠ Gagal memuat produk. Cek koneksi.</p>';
+      return;
+    }
 
     if (!products.length) {
       grid.innerHTML = '<p style="font-family:Lora,serif;font-style:italic;color:var(--brown-light);padding:2rem;grid-column:1/-1">Belum ada produk. Tambahkan melalui admin panel.</p>';
