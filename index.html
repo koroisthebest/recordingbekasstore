@@ -146,6 +146,16 @@
     z-index: 1;
   }
 
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+  }
+
   .hero-label {
     font-family: 'DM Mono', monospace;
     font-size: 0.7rem;
@@ -407,23 +417,17 @@
 
   /* ===== DIVIDER ===== */
   .tape-divider {
-    text-align: center;
-    padding: 1rem 0;
-    position: relative;
-    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
   }
 
   .tape-divider::before, .tape-divider::after {
     content: '';
-    position: absolute;
-    top: 50%;
-    width: calc(50% - 80px);
+    flex: 1;
     height: 1px;
     background: var(--parchment);
   }
-
-  .tape-divider::before { left: 0; }
-  .tape-divider::after { right: 0; }
 
   .tape-divider span {
     font-family: 'DM Mono', monospace;
@@ -431,9 +435,8 @@
     letter-spacing: 0.25em;
     text-transform: uppercase;
     color: var(--brown-light);
-    background: var(--cream);
     padding: 0 1rem;
-    position: relative;
+    white-space: nowrap;
   }
 
   /* ===== CHECKOUT / CART SIDEBAR (off-canvas style) ===== */
@@ -978,6 +981,7 @@
 
 <!-- HERO -->
 <section class="hero">
+  <p class="hero-title">Recording Bekas</p>
   <p class="hero-label">Sejak 2021</p>
   <h1>100% Original, Sudah Menjual<br>Lebih dari <em>2000 Barang</em></h1>
   <p>Recording gear & alat musik baru dan bekas. Dikurasi dengan teliti — dari studio profesional sampai home studio.</p>
