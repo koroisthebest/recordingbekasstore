@@ -954,6 +954,183 @@
     .cart-panel { width: 100%; }
     .form-row { grid-template-columns: 1fr; }
   }
+
+  /* ===== LIGHTBOX (desktop only) ===== */
+  .lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 13, 7, 0.92);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .lightbox-overlay.open {
+    display: flex;
+  }
+
+  .lightbox-inner {
+    position: relative;
+    width: 90vw;
+    max-width: 960px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .lightbox-track-wrap {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 3px;
+    border: 1px solid rgba(196, 126, 42, 0.3);
+    background: var(--brown-dark);
+    max-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .lightbox-slide {
+    flex: 0 0 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    max-height: 80vh;
+  }
+
+  .lightbox-slide img {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    display: block;
+    border-radius: 2px;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .lightbox-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: rgba(74, 49, 32, 0.8);
+    border: 1px solid var(--amber);
+    border-radius: 2px;
+    color: var(--cream);
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.15s, color 0.15s;
+    backdrop-filter: blur(4px);
+  }
+
+  .lightbox-btn:hover {
+    background: var(--amber);
+    color: var(--ink);
+  }
+
+  .lightbox-btn-prev { left: -22px; }
+  .lightbox-btn-next { right: -22px; }
+
+  .lightbox-close {
+    position: absolute;
+    top: -44px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    background: rgba(74, 49, 32, 0.85);
+    border: 1px solid var(--brown-light);
+    border-radius: 2px;
+    color: var(--parchment);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .lightbox-close:hover {
+    background: var(--rust);
+    border-color: var(--rust);
+    color: white;
+  }
+
+  .lightbox-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .lightbox-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--parchment);
+    letter-spacing: 0.04em;
+  }
+
+  .lightbox-counter {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+  }
+
+  .lightbox-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .lightbox-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .lightbox-dot.active {
+    background: var(--amber-light);
+    transform: scale(1.3);
+  }
+
+  /* Tambahkan cursor pointer & hint zoom ke foto di card — desktop only */
+  @media (min-width: 769px) {
+    .card-slider .slider-slide img {
+      cursor: zoom-in;
+    }
+    .card-slider .slider-slide img:hover {
+      opacity: 0.92;
+      transition: opacity 0.15s;
+    }
+  }
+
+  /* Lightbox hanya desktop */
+  @media (max-width: 768px) {
+    .lightbox-overlay { display: none !important; }
+  }
 </style>
   <!-- Midtrans Snap.js (ganti ke production URL kalau sudah live) -->
   <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-XbghD5kfQNOe807Y"></script>
@@ -1041,6 +1218,23 @@
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+<!-- LIGHTBOX (desktop only) -->
+<div class="lightbox-overlay" id="lightbox-overlay" role="dialog" aria-modal="true">
+  <div class="lightbox-inner" id="lightbox-inner">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Tutup foto">✕</button>
+    <div class="lightbox-track-wrap">
+      <div class="lightbox-track" id="lightbox-track"></div>
+      <button class="lightbox-btn lightbox-btn-prev" id="lightbox-prev" aria-label="Foto sebelumnya">&#8249;</button>
+      <button class="lightbox-btn lightbox-btn-next" id="lightbox-next" aria-label="Foto berikutnya">&#8250;</button>
+    </div>
+    <div class="lightbox-meta">
+      <span class="lightbox-title" id="lightbox-title"></span>
+      <span class="lightbox-counter" id="lightbox-counter"></span>
+    </div>
+    <div class="lightbox-dots" id="lightbox-dots"></div>
+  </div>
+</div>
 
 <!-- CART OVERLAY & PANEL -->
 <div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
@@ -1241,6 +1435,7 @@
 
     // Init slider setelah produk di-render
     initSliders();
+    attachLightboxToSliders();
   }
 
   // Jalankan saat DOM siap
@@ -1510,27 +1705,118 @@
 
   // initSliders dipanggil oleh loadAndRenderProducts setelah grid di-render
 
-  function filterProducts(btn, cat) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+  // ===== LIGHTBOX ENGINE (desktop only) =====
+  (function() {
+    const overlay   = document.getElementById('lightbox-overlay');
+    const track     = document.getElementById('lightbox-track');
+    const closeBtn  = document.getElementById('lightbox-close');
+    const prevBtn   = document.getElementById('lightbox-prev');
+    const nextBtn   = document.getElementById('lightbox-next');
+    const titleEl   = document.getElementById('lightbox-title');
+    const counterEl = document.getElementById('lightbox-counter');
+    const dotsEl    = document.getElementById('lightbox-dots');
 
-    const cards = document.querySelectorAll('.card');
-    let visible = 0;
+    let slides = [];
+    let current = 0;
 
-    cards.forEach(card => {
-      const cardCat = card.dataset.cat;
-      const cardCond = card.dataset.cond;
-      let show = false;
+    function openLightbox(imgUrls, startIndex, productName) {
+      // Hanya buka di desktop
+      if (window.innerWidth <= 768) return;
 
-      if (cat === 'all') show = true;
-      else if (cat === 'used') show = cardCond === 'used';
-      else show = cardCat === cat;
+      slides = imgUrls.filter(Boolean);
+      if (!slides.length) return;
 
-      card.style.display = show ? 'block' : 'none';
-      if (show) visible++;
+      current = Math.max(0, Math.min(startIndex, slides.length - 1));
+      titleEl.textContent = productName || '';
+
+      // Build slides
+      track.innerHTML = slides.map((url, i) =>
+        `<div class="lightbox-slide"><img src="${url}" alt="Foto ${i+1}" draggable="false" loading="lazy"></div>`
+      ).join('');
+
+      // Build dots
+      dotsEl.innerHTML = slides.map((_, i) =>
+        `<button class="lightbox-dot${i === current ? ' active' : ''}" data-idx="${i}" aria-label="Foto ${i+1}"></button>`
+      ).join('');
+
+      dotsEl.querySelectorAll('.lightbox-dot').forEach(dot => {
+        dot.addEventListener('click', () => goTo(parseInt(dot.dataset.idx)));
+      });
+
+      // Show/hide nav buttons
+      prevBtn.style.display = slides.length > 1 ? 'flex' : 'none';
+      nextBtn.style.display = slides.length > 1 ? 'flex' : 'none';
+      dotsEl.style.display  = slides.length > 1 ? 'flex' : 'none';
+
+      updateLightboxUI();
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      track.innerHTML = '';
+    }
+
+    function goTo(idx) {
+      current = (idx + slides.length) % slides.length;
+      updateLightboxUI();
+    }
+
+    function updateLightboxUI() {
+      track.style.transform = `translateX(-${current * 100}%)`;
+      counterEl.textContent = slides.length > 1 ? `${current + 1} / ${slides.length}` : '';
+      dotsEl.querySelectorAll('.lightbox-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+      });
+    }
+
+    // Events
+    closeBtn.addEventListener('click', closeLightbox);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeLightbox(); });
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+
+    // Keyboard
+    document.addEventListener('keydown', e => {
+      if (!overlay.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') goTo(current - 1);
+      if (e.key === 'ArrowRight') goTo(current + 1);
     });
 
-    document.getElementById('product-count').textContent = `— ${visible} produk`;
+    // Touch/swipe inside lightbox
+    let lbTouchX = 0;
+    track.addEventListener('touchstart', e => { lbTouchX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - lbTouchX;
+      if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+
+    // Expose globally
+    window._openLightbox = openLightbox;
+  })();
+
+  // Attach lightbox click to all slider images (called after products render)
+  function attachLightboxToSliders() {
+    if (window.innerWidth <= 768) return;
+    document.querySelectorAll('[data-slider]').forEach(slider => {
+      const card = slider.closest('.card');
+      const productName = card ? (card.querySelector('.card-name') || {}).textContent : '';
+      const imgs = Array.from(slider.querySelectorAll('.slider-slide img'));
+      if (!imgs.length) return;
+      const urls = imgs.map(img => img.src);
+      imgs.forEach((img, idx) => {
+        // Prevent double-binding
+        if (img.dataset.lightboxBound) return;
+        img.dataset.lightboxBound = '1';
+        img.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window._openLightbox(urls, idx, productName);
+        });
+      });
+    });
   }
 </script>
 </body>
